@@ -2,29 +2,26 @@ const request = require('request');
 const express = require('express');
 const app = express();
 const port = 2880;
-const url = 'http://localhost:1880/nukibridge?test=data';
-const user = 'hxme';
-const pass = '';
+const url = 'http://user:pass@localhost:1880/nukibridge';
 
-app.get('/nukibridge', function (req, res) {
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-    request.get(url, {
-        'auth': {
-          'user': user,
-          'pass': pass
-        }
+app.route('/nukibridge').post(function (req, res) {
+    request({
+        method: 'post', 
+        url: url, 
+        body: req.body,
+        json: true
     }, function (error, response, body) {
-        if (error) console.log(error);
-        console.log(JSON.stringify(response));
-        console.log(response.statusCode);
-        res.sendStatus(response.statusCode);
+        if (error) {
+            console.log(error);
+        }
+        console.log(response.statusCode + ': ' + JSON.stringify(req.body));
     });
-
+    res.sendStatus(200);
 });
 
 app.listen(port, function () {
-    console.log('Started Nuki Workaround! Port: ' + port);
+    console.log('Started Nuki Workaround. Port: ' + port);
 });
-
-
-
